@@ -9,7 +9,7 @@ use App\Http\Requests;
 use Illuminate\Http\Response;
 use App\Turtle\Transformers\TripTransformer;
 
-class TripsController extends ApiController
+class TripController extends ApiController
 {
     /**
      * @var App\Turtle\Transformers\TripTransformer

@@ -1,6 +1,5 @@
 <?php
 
-use App\Trip;
 /*
 |--------------------------------------------------------------------------
 | Routes File
@@ -12,9 +11,17 @@ use App\Trip;
 |
 */
 Route::group(['prefix' => 'api/v1'], function() {
-    Route::resource('trips', 'TripsController');
+    Route::resource('trips', 'TripController');
 });
 
+Route::group(['prefix' => 'api/v1'], function() {
+    Route::get('users', 'UserController@index');
+    Route::post('users', 'UserController@store');
+
+    //
+    Route::post('verifyUser/', 'UserController@verifyUser');
+
+});
 
 /*
 |--------------------------------------------------------------------------
