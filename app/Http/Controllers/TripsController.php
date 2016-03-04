@@ -9,7 +9,7 @@ use App\Http\Requests;
 use Illuminate\Http\Response;
 use App\Turtle\Transformers\TripTransformer;
 
-class TripsController extends Controller
+class TripsController extends ApiController
 {
     /**
      * @var App\Turtle\Transformers\TripTransformer
@@ -31,9 +31,9 @@ class TripsController extends Controller
         //
         $trips = Trip::all();
 
-        return response()->json([
+        return $this->respond([
             'data' => $this->tripTransformer->transformCollection($trips->all())
-        ], 200);
+        ]);
     }
 
     /**
@@ -65,20 +65,15 @@ class TripsController extends Controller
      */
     public function show($id)
     {
-        //
         $trip = Trip::find($id);
 
-        if (!$trip) {
-            return response()->json([
-                'error' => [
-                    'message' => 'Trip does not exist'
-                ]
-            ], 404);
+        if ( ! $trip) {
+            return $this->respondNotFound('Trip does not exist');
         }
 
-        return response()->json([
+        return $this->respond([
             'data' => $this->tripTransformer->transform($trip)
-        ], 200);
+        ]);
     }
 
     /**
