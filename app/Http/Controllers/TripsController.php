@@ -7,9 +7,20 @@ use Illuminate\Http\Request;
 use App\Trip;
 use App\Http\Requests;
 use Illuminate\Http\Response;
+use App\Turtle\Transformers\TripTransformer;
 
 class TripsController extends Controller
 {
+    /**
+     * @var App\Turtle\Transformers\TripTransformer
+     */
+    protected $tripTransformer;
+
+    function __construct(TripTransformer $tripTransformer)
+    {
+        $this->tripTransformer = $tripTransformer;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +32,7 @@ class TripsController extends Controller
         $trips = Trip::all();
 
         return response()->json([
-            'data' => $this->transformCollection($trips)
+            'data' => $this->tripTransformer->transformCollection($trips->all())
         ], 200);
     }
 
@@ -38,7 +49,7 @@ class TripsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -49,7 +60,7 @@ class TripsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -57,7 +68,7 @@ class TripsController extends Controller
         //
         $trip = Trip::find($id);
 
-        if ( ! $trip) {
+        if (!$trip) {
             return response()->json([
                 'error' => [
                     'message' => 'Trip does not exist'
@@ -66,14 +77,14 @@ class TripsController extends Controller
         }
 
         return response()->json([
-            'data' => $this->transform($trip)
+            'data' => $this->tripTransformer->transform($trip)
         ], 200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -84,8 +95,8 @@ class TripsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -96,7 +107,7 @@ class TripsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -104,15 +115,5 @@ class TripsController extends Controller
         //
     }
 
-    private function transformCollection($trips) {
-        return array_map([$this, 'transform'], $trips->toArray());
-    }
 
-    private function transform($trip) {
-        return [
-            'id' => $trip['_id'],
-            'title' => $trip['title'],
-            'description' => $trip['description']
-        ];
-    }
 }
