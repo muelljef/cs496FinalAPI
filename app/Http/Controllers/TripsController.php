@@ -55,6 +55,12 @@ class TripsController extends ApiController
     public function store(Request $request)
     {
         //
+        if  ( ! Input::get('title') or ! Input::get('description'))
+        {
+            //return error, 422 (un-processable entity)
+            return $this->setStatusCode(422)->respondWithError('Parameters failed validation for a trip');
+
+        }
     }
 
     /**
