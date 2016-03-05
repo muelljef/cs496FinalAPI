@@ -55,7 +55,8 @@ class TripController extends ApiController
     public function store()
     {
 
-        if (!UserController::verifyUser(request()->get('username'), request()->get('password'))) {
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
             return $this->respondFailedUserAuthentication();
         }
 
@@ -63,7 +64,14 @@ class TripController extends ApiController
             return $this->respondMissingFields('The title or description were missing');
         }
 
-        $trip = Trip::create(request()->all());
+        $trip = new Trip;
+        $trip->title = request()->get('title');
+        $trip->description = request()->get('description');
+        $trip->userId = $user->_id;
+        $trip->save();
+
+        //TODO: associate trip to user (one user has many trips)
+        //$user->addTrip($trip->_id);
 
         return $this->setStatusCode(201)->respond([
             'data' => $this->tripTransformer->transform($trip)

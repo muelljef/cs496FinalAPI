@@ -11,7 +11,8 @@ class TripTransformer extends Transformer
         return [
             'id' => $trip['_id'],
             'title' => $trip['title'],
-            'description' => $trip['description']
+            'description' => $trip['description'],
+            'userId' => $trip['userId']
         ];
     }
 }

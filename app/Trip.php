@@ -12,6 +12,6 @@ class Trip extends Moloquent
     protected $collection = 'trips';
 
     protected $fillable = [
-        'title', 'description'
+        'title', 'description', 'userId',
     ];
 }
