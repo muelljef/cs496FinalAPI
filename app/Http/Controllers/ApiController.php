@@ -46,6 +46,33 @@ class ApiController extends Controller
     }
 
     /**
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function respondMissingFields($message = 'Could not process because required fields were missing')
+    {
+        return $this->setStatusCode(400)->respondWithError($message);
+    }
+
+    /**
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function respondFailedUserAuthentication($message = "User Authentication Failed")
+    {
+        return $this->setStatusCode(401)->respondWithError($message);
+    }
+
+    /**
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function respondNotProcessable($message = 'Could not process the request')
+    {
+        return $this->setStatusCode(422)->respondWithError($message);
+    }
+
+    /**
      * @param $data
      * @param array $headers
      * @return \Illuminate\Http\JsonResponse

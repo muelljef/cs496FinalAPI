@@ -15,11 +15,8 @@ Route::group(['prefix' => 'api/v1'], function() {
 });
 
 Route::group(['prefix' => 'api/v1'], function() {
-    Route::get('users', 'UserController@index');
+    //Route::get('users', 'UserController@index');
     Route::post('users', 'UserController@store');
-
-    //
-    Route::post('verifyUser/', 'UserController@verifyUser');
 
 });
 

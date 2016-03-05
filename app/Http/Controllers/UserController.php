@@ -2,30 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Turtle\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 
 use App\User;
 use App\Http\Requests;
 use MongoDB\Driver\Exception\BulkWriteException;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
-    //
+    /**
+     * @var App\Turtle\Transformers\UserTransformer
+     */
+    protected $userTransformer;
 
-    public function index()
+    /**
+     * UserController constructor.
+     * @param $userTransformer
+     */
+    public function __construct(UserTransformer $userTransformer)
     {
-        $users = User::all();
-        return $users;
+        $this->userTransformer = $userTransformer;
     }
 
-    public function store($username=null, $password=null)
+
+    public function store($username = null, $password = null)
     {
 
         $username = request()->get('username');
         $password = request()->get('password');
-        if ( ! $username || ! $password )
-        {
-            return "error missing credentials";
+        if (!$username or !$password) {
+            return $this->respondMissingFields('Both the username and password fields are required');
         }
 
         $user = new User;
@@ -35,27 +42,25 @@ class UserController extends Controller
         try {
             $user->save();
         } catch (BulkWriteException $e) {
-            return "Sorry it looks like that users already exists";
+            return $this->respondNotProcessable("Sorry it looks like that users already exists");
         }
 
-        return $user;
+        return $this->setStatusCode(201)->respond([
+            'data' => $this->userTransformer->transform($user)
+        ]);
     }
 
-    public function verifyUser($username=null, $password=null)
+    public static function verifyUser($username = null, $password = null)
     {
-        $username = request()->get('username');
-        $password = request()->get('password');
-        if ( ! $username || ! $password )
-        {
-            return "error missing credentials";
+        if (!$username or !$password) {
+            return false;
         }
 
         $user = User::where('username', '=', $username)->first();
 
-        if(password_verify($password, $user->password)) {
-            return "true";
+        if (password_verify($password, $user->password)) {
+            return true;
         }
-        return 'false';
-
+        return false;
     }
 }

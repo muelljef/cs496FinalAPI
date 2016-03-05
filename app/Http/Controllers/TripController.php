@@ -52,15 +52,23 @@ class TripController extends ApiController
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
-        if  ( ! Input::get('title') or ! Input::get('description'))
-        {
-            //return error, 422 (un-processable entity)
-            return $this->setStatusCode(422)->respondWithError('Parameters failed validation for a trip');
 
+        if (!UserController::verifyUser(request()->get('username'), request()->get('password'))) {
+            return $this->respondFailedUserAuthentication();
         }
+
+        if (!request()->get('title') or !request()->get('description')) {
+            return $this->respondMissingFields('The title or description were missing');
+        }
+
+        $trip = Trip::create(request()->all());
+
+        return $this->setStatusCode(201)->respond([
+            'data' => $this->tripTransformer->transform($trip)
+        ]);
+
     }
 
     /**
@@ -73,7 +81,7 @@ class TripController extends ApiController
     {
         $trip = Trip::find($id);
 
-        if ( ! $trip) {
+        if (!$trip) {
             return $this->respondNotFound('Trip does not exist');
         }
 
