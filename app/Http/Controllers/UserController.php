@@ -38,6 +38,7 @@ class UserController extends ApiController
         $user = new User;
         $user->username = $username;
         $user->password = password_hash($password, PASSWORD_DEFAULT);
+        $user->tripIds = array();
 
         try {
             $user->save();

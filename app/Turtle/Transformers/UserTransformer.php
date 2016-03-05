@@ -9,7 +9,8 @@ class UserTransformer extends Transformer
     {
         return [
             'id' => $user['_id'],
-            'username' => $user['username']
+            'username' => $user['username'],
+            'tripIds' => $user['tripIds']
         ];
     }
 }

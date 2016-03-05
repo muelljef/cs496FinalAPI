@@ -24,4 +24,12 @@ class User extends Moloquent
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function addTrip($tripId)
+    {
+        $tripIds = $this->tripIds;
+        $tripIds[] = $tripId;
+        $this->tripIds = $tripIds;
+        $this->save();
+    }
 }
