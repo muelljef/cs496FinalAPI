@@ -64,11 +64,10 @@ class TripController extends ApiController
             return $this->respondMissingFields('The title or description were missing');
         }
 
-        // Create trip it (with associated user id)
-        //$trip = Trip::create(request()->all());
-        $trip = new Trip;
-        $trip->title = request()->get('title');
-        $trip->description = request()->get('description');
+        // Create trip
+        $trip = Trip::create(request()->all());
+
+        // Associate user with trip
         $trip->userId = $user->_id;
         $trip->save();
 
