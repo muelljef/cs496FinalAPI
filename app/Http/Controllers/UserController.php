@@ -59,6 +59,10 @@ class UserController extends ApiController
 
         $user = User::where('username', '=', $username)->first();
 
+        if(!$user) {
+            return false;
+        }
+
         if (password_verify($password, $user->password)) {
             return $user;
         }
