@@ -137,6 +137,28 @@ class TripController extends ApiController
     public function destroy($id)
     {
         //
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        $trip = Trip::where('_id', '=', $id)->where('userId', '=', $user->_id)->first();
+
+        if (!$trip) {
+            return $this->respondNotFound('Trip does not exist or you do not have authorization to see this trip');
+        }
+
+        //Remove the trip id from the user
+        $updatedTrips = array_diff($user->tripIds, array($trip->_id));
+        $user->tripIds = $updatedTrips;
+        $user->save();
+
+        $trip->delete();
+
+        return $this->respond([
+            'message' => "The trip was successfully deleted"
+        ]);
+
     }
 
 
