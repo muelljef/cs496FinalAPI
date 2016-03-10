@@ -29,21 +29,16 @@ class TripController extends ApiController
     public function index()
     {
         //
-        $trips = Trip::all();
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        $trips = Trip::where('userId', '=', $user->_id)->get();
 
         return $this->respond([
             'data' => $this->tripTransformer->transformCollection($trips->all())
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -88,26 +83,20 @@ class TripController extends ApiController
      */
     public function show($id)
     {
-        $trip = Trip::find($id);
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        $trip = Trip::where('_id', '=', $id)->where('userId', '=', $user->_id)->first();
 
         if (!$trip) {
-            return $this->respondNotFound('Trip does not exist');
+            return $this->respondNotFound('Trip does not exist or you do not have authorization to see this trip');
         }
 
         return $this->respond([
             'data' => $this->tripTransformer->transform($trip)
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -117,9 +106,26 @@ class TripController extends ApiController
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        //
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        $trip = Trip::where('_id', '=', $id)->where('userId', '=', $user->_id)->first();
+
+        if (!$trip) {
+            return $this->respondNotFound('Trip does not exist or you do not have authorization to see this trip');
+        }
+
+        $trip->title = request()->get('title');
+        $trip->description = request()->get('description');
+        $trip->save();
+
+        return $this->respond([
+            'data' => $this->tripTransformer->transform($trip)
+        ]);
     }
 
     /**
