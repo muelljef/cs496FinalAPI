@@ -137,11 +137,13 @@ class TripController extends ApiController
         }
 
         $trip = Trip::where('_id', '=', $id)->where('userId', '=', $user->_id)->first();
-
         if (!$trip) {
             return $this->respondNotFound('Trip does not exist or you do not have authorization to see this trip');
         }
 
+        if (!request()->get('title') or !request()->get('description')) {
+            return $this->respondMissingFields('The title or description were missing');
+        }
         $trip->title = request()->get('title');
         $trip->description = request()->get('description');
         $trip->save();

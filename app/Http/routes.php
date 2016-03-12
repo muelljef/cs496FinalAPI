@@ -19,7 +19,6 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::get('users', 'UserController@index');
     Route::get('users/{username}', 'UserController@show');
     Route::post('users', 'UserController@store');
-
 });
 
 /*
