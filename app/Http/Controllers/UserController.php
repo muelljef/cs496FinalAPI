@@ -51,6 +51,24 @@ class UserController extends ApiController
         ]);
     }
 
+    public function show($username)
+    {
+        $password = request()->get('password');
+        if (!$username or !$password) {
+            return $this->respondMissingFields('Both the username and password fields are required');
+        }
+
+        $user = UserController::verifyUser($username, $password);
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        return $this->respond([
+            'data' => $this->userTransformer->transform($user)
+        ]);
+
+    }
+
     public static function verifyUser($username = null, $password = null)
     {
         if (!$username or !$password) {
