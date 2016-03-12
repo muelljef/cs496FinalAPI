@@ -12,6 +12,7 @@
 */
 Route::group(['prefix' => 'api/v1'], function() {
     Route::resource('trips', 'TripController');
+    Route::post('trips/{tripId}/locations', 'TripController@storeLocation');
 });
 
 Route::group(['prefix' => 'api/v1'], function() {

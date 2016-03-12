@@ -61,6 +61,7 @@ class TripController extends ApiController
 
         // Create trip
         $trip = Trip::create(request()->all());
+        $trip->locations = array();
 
         // Associate user with trip
         $trip->userId = $user->_id;
@@ -75,6 +76,28 @@ class TripController extends ApiController
 
     }
 
+    public function storeLocation($id)
+    {
+        $user = UserController::verifyUser(request()->get('username'), request()->get('password'));
+        if (!$user) {
+            return $this->respondFailedUserAuthentication();
+        }
+
+        if (!request()->get('location')) {
+            return $this->respondMissingFields('The location was missing');
+        }
+
+        $trip = Trip::where('_id', '=', $id)->where('userId', '=', $user->_id)->first();
+        $trip->addLocation(request()->get('location'));
+
+        if (!$trip) {
+            return $this->respondNotFound('Trip does not exist or you do not have authorization to see this trip');
+        }
+
+        return $this->respond([
+            'data' => $this->tripTransformer->transform($trip)
+        ]);
+    }
     /**
      * Display the specified resource.
      *

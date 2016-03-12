@@ -12,6 +12,14 @@ class Trip extends Moloquent
     protected $collection = 'trips';
 
     protected $fillable = [
-        'title', 'description', 'userId',
+        'title', 'description', 'userId', 'locations',
     ];
+
+    public function addLocation($location)
+    {
+        $locations = $this->locations;
+        $locations[] = $location;
+        $this->locations = $locations;
+        $this->save();
+    }
 }
