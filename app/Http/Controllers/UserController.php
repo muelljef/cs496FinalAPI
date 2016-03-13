@@ -25,15 +25,6 @@ class UserController extends ApiController
         $this->userTransformer = $userTransformer;
     }
 
-    public function index()
-    {
-        $users = User::all();
-
-        return $this->respond([
-            'data' => $this->userTransformer->transformCollection($users->all())
-        ]);
-    }
-
     public function store($username = null, $password = null)
     {
 
